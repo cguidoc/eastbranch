@@ -1,0 +1,11 @@
+<h1> {{ employee.user.first_name }} </h1>
+
+
+<h2>Total Vacation Time Accrued = </h2>
+<h2>Total Vacation Time Used = {{ debit|floatformat:2 }} hours</h2>
+
+<ul>
+	{% for vacation in employee.entry_set.all %}
+		<li>{{ vacation.comment }}, <b>{{vacation.start_date}}</b> to <b>{{vacation.end_date}}</b> -- {{vacation.total_hours|floatformat:2}}</li>
+	{% endfor %}
+</ul>

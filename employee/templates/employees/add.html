@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.css">
+		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.css">
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.js"></script>
+		<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.js"></script>
+		{{ form.media }}
+	</head>
+	<body>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-4">
+					<form action={% url 'employees:add' employee.id %} method="post">
+						{% for field in form.visible_fields %}
+						<div id="div_{{ field.html_name }}"
+							class="form-group{% if field.errors %} has-error{% endif %}">
+							{{ field.label_tag }}
+							{{ field }}
+							<div class="text-muted pull-right">
+								<small>{{ field.help_text }}</small>
+							</div>
+							<div class="help-block">
+								{{ field.errors }}
+							</div>
+						</div>
+						{% endfor %}
+
+						
+						{% csrf_token %}
+						<div class="form-group">
+							<input type="submit" value="Submit" class="btn btn-primary" />
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
