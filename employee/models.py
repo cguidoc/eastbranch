@@ -55,6 +55,7 @@ class Entry(models.Model):
 		# create new datetime objects for the start and end of the entry
 		# use these to calculate the incomplete days at the start and end of the entry
 		# we count the total number of days using the rrule, then subtract the incomplete days at the start and end
+		# remember that database stores in UTC, so times are shifted by 5 hours
 
 		end_date_end = self.end_date.replace(hour = 21, minute = 00, second = 0, microsecond = 0)
 		start_date_start = self.start_date.replace(hour = 12, minute = 30, second = 0, microsecond = 0)
