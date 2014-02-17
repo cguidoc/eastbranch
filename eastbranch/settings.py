@@ -7,6 +7,13 @@ https://docs.djangoproject.com/en/1.6/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.6/ref/settings/
 """
+"""
+---Dependencies---
+bootstrap3_datetime - pip install bootstrap3_datetime
+dateutil - pip install python-dateutil (use rrule for Entry Model)
+
+"""
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os

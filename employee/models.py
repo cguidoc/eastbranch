@@ -52,32 +52,38 @@ class Entry(models.Model):
 		return self.comment
 
 	def total_hours(self):
-		rounded_start = self.start_date.replace(hour = 0, minute = 0, second = 0, microsecond = 0)
-		rounded_end = self.end_date.replace(hour = 0, minute = 0, second = 0, microsecond = 0)
-		end_date_start = self.end_date.replace(hour = 12, minute = 30, second = 0, microsecond = 0)
+		# create new datetime objects for the start and end of the entry
+		# use these to calculate the incomplete days at the start and end of the entry
+		# we count the total number of days using the rrule, then subtract the incomplete days at the start and end
 
+		end_date_end = self.end_date.replace(hour = 21, minute = 00, second = 0, microsecond = 0)
+		start_date_start = self.start_date.replace(hour = 12, minute = 30, second = 0, microsecond = 0)
 
-		if (self.start_date.day == self.end_date.day):
-			days = 1
-		else:
-			days = rrule.rrule(rrule.DAILY, byweekday=range(0,5), dtstart=self.start_date, until=self.end_date)
-			days = len(list(days))
-			return days
-		# round start and end times to calculate calander days, not chunks of 24 hours
+		# calculate the number of minutes at the start of the entry
+		start_offset = self.start_date - start_date_start
+		start_offset_minutes = (start_offset.total_seconds() /60 )
+
+		# calculate the number of minutes at the end of the entry
+		end_offset = end_date_end - self.end_date
+		end_offset_minutes = (end_offset.total_seconds() / 60 ) 
+
+		# calculate the total number of days the entry spans - an incomplete day still counts as 1 day
+		days = rrule.rrule(rrule.DAILY, byweekday=range(0,5), dtstart=self.start_date, until=self.end_date)
+		days = len(list(days))
 		
+		# calculate the total number of minutes to offset the entry
+		minutes = start_offset_minutes + end_offset_minutes		# offset for incomplete days
+		minutes += days * 30									# auto deduct for lunch times
 		
-		end_day = self.end_date - end_date_start
-		seconds = end_day.total_seconds()
-		hours = seconds // 3600.0
-		minutes = (seconds % 3600) // 60
-		# check to see if we need to deduct 30 minutes for lunch
-		if (self.end_date.hour >= 17):
+		# add back the lunch deduction if end time is before lunch
+		if (self.end_date.hour in range(12, 17)):
 			minutes -= 30
-
-		hours += (minutes / 60)
-		hours += days*8
-
 		
+		hours = days * 8.5
+
+		# now deduct the offsets
+		hours -= (minutes / 60)
+
 		return hours
 
 class Approval(models.Model):
