@@ -2,9 +2,15 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 import datetime
+from dateutil import rrule
 
 
 # need to adjust Entry time function for start and end on the same date
+# need to adjust Entry time function to exclude weekends
+# need to adjust Entry time function to calculate not full days
+# calculate start subtraction (start time - 7:30)
+# calculate end subtraction	(4 - end time)
+# subtract both from days*8 (total hours)
  
 class Employee(models.Model):
 	user = models.OneToOneField(User)
@@ -46,14 +52,20 @@ class Entry(models.Model):
 		return self.comment
 
 	def total_hours(self):
-
-		# round start and end times to calculate calander days, not chunks of 24 hours
 		rounded_start = self.start_date.replace(hour = 0, minute = 0, second = 0, microsecond = 0)
 		rounded_end = self.end_date.replace(hour = 0, minute = 0, second = 0, microsecond = 0)
 		end_date_start = self.end_date.replace(hour = 12, minute = 30, second = 0, microsecond = 0)
-		
-		days = (rounded_end - rounded_start).days
 
+
+		if (self.start_date.day == self.end_date.day):
+			days = 1
+		else:
+			days = rrule.rrule(rrule.DAILY, byweekday=range(0,5), dtstart=self.start_date, until=self.end_date)
+			days = len(list(days))
+			return days
+		# round start and end times to calculate calander days, not chunks of 24 hours
+		
+		
 		end_day = self.end_date - end_date_start
 		seconds = end_day.total_seconds()
 		hours = seconds // 3600.0
@@ -65,6 +77,7 @@ class Entry(models.Model):
 		hours += (minutes / 60)
 		hours += days*8
 
+		
 		return hours
 
 class Approval(models.Model):

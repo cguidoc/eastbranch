@@ -5,7 +5,6 @@ from bootstrap3_datetime.widgets import DateTimePicker
 
 # https://pypi.python.org/pypi/django-bootstrap3-datetimepicker
 
-# need to validate start and end times are with in working hours
 
 class RequestForm(ModelForm):
 	start_date = forms.DateTimeField(
@@ -19,18 +18,14 @@ class RequestForm(ModelForm):
 	def clean(self):
 		cleaned_data = super(RequestForm, self).clean()
 		start = cleaned_data.get("start_date")
-		end = cleaned_data.get("end_date")
-
-		end_date_start = self.end_date.replace(hour = 12, minute = 30, second = 0, microsecond = 0)
+		end = cleaned_data.get("end_date")	
 		
-		
-		if (end < start):
-			msg = u"End date must after start date"
+		if ((end < start) or (end.hour not in range(12,19)) or (start.hour not in range(12,19) and start.minute < 30 )):
+			msg = u"Error with Dates"
 			self._errors['start_date'] = self.error_class([msg])
 			self._errors['end_date'] = self.error_class([msg])
 
 			del cleaned_data['start_date']
 			del cleaned_data['end_date']
-
-		if (end)
+		
 		return cleaned_data
