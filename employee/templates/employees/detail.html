@@ -1,11 +1,47 @@
-<h1> {{ employee.user.first_name }} </h1>
-
-
-<h2>Total Vacation Time Accrued = </h2>
-<h2>Total Vacation Time Used = {{ debit|floatformat:2 }} hours</h2>
-
-<ul>
-	{% for vacation in employee.entry_set.all %}
-		<li>{{ vacation.comment }}, <b>{{vacation.start_date}}</b> to <b>{{vacation.end_date}}</b> -- {{vacation.total_hours|floatformat:2}}</li>
-	{% endfor %}
-</ul>
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.css">
+		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.css">
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.js"></script>
+	</head>
+	<body>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-8">
+					<h1> {{ employee.user.first_name }} </h1>
+					<h2>Total Vacation Time Accrued = </h2>
+					<h2>Total Vacation Time Used = {{ debit|floatformat:2 }} hours</h2>
+					<div class="panel panel-default">
+						<div class="panel-heading">Pending Time Off</div>
+						<div class="panel body">
+							<p>this table displays vacations not yet approved</p>
+						</div>
+						<table class="table table-condensed">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>Entry Comment</th>
+									<th>Start DateTime</th>
+									<th>End DateTime</th>
+									<th>Entry Duration</th>
+									<th>Approve</th>
+								</tr>
+							</thead>
+							<tbody>
+							{% for vacation in unapproved %}
+								<tr>
+									<td>{{ vacation.id }}</td>
+									<td>{{ vacation.comment }}</td>
+									<td>{{ vacation.start_date }}</td>
+									<td>{{ vacation.end_date }}</td>
+									<td>{{ vacation.total_hours|floatformat:2 }}</td>
+									<td><a href={% url 'employees:approve' vacation.id %}>approve</a></td>
+								</tr>
+							{% endfor %}
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>

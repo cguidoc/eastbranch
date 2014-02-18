@@ -89,7 +89,7 @@ class Entry(models.Model):
 
 class Approval(models.Model):
 	entry_id = models.ForeignKey(Entry)
-	approved_by = models.ForeignKey(Employee)
+	approved_by = models.ForeignKey(User)
 	approved_date = models.DateTimeField(auto_now_add=True)
 
 	def __unicode__(self):
